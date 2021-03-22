@@ -6,6 +6,7 @@ import passport from "passport";
 
 import TeacherRouter from "./routes/api/teachers.api.js";
 import passportFun from "./config/passport.config.js";
+import AdminRouter from "./routes/api/admin.api.js";
 const app = express();
 
 //Bodyparser middleware
@@ -41,7 +42,8 @@ app.get("/", (req, res) => {
   res.send("it is working!!");
 });
 app.use("/api/teacher", TeacherRouter);
+app.use("/api/admin", AdminRouter);
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Server running at ${port}`));

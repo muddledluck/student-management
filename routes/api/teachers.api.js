@@ -86,9 +86,7 @@ TeacherRouter.post("/teacher-login", (req, res) => {
         // Teacher matched
         // Create JWT Payload
         const payload = {
-          id: teacher.id,
-          name: teacher.name,
-          adminApproved: teacher.adminApproved,
+          ...teacher._doc,
         };
 
         //Sign token
@@ -100,8 +98,7 @@ TeacherRouter.post("/teacher-login", (req, res) => {
           },
           (err, token) => {
             res.json({
-              adminApproved: payload.adminApproved,
-              LoggedUser: payload.id,
+              teacher: { ...payload },
               success: true,
               token: "Bearer " + token,
             });
@@ -173,7 +170,7 @@ TeacherRouter.post("/post-assignment", (req, res) => {
 });
 
 // @route POST api/teacher/delete-assignment
-// @desc post assignment for student
+// @desc deletefor student
 // @access Public
 TeacherRouter.post("/delete-assignment", (req, res) => {
   // Form Validation
