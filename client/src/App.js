@@ -15,7 +15,7 @@ import TeacherRegister from "./components/auth/teacher/teacherRegister.component
 import Navbar from "./components/navbar/navbar.component";
 import Homepage from "./pages/homepage/homepage.page";
 import PrivateRoute from "./components/private-route/PrivateRoute";
-import Dashboard from "./pages/dashboard/dashboard.page";
+import TeacherProfile from "./pages/teacher-profile/teacher-profile.page";
 
 import "./App.css";
 
@@ -52,7 +52,11 @@ class App extends Component {
           <Route exact path="/teacher-register" component={TeacherRegister} />
           <Route exact path="/teacher-login" component={TeacherLogin} />
           <Switch>
-            <PrivateRoute exact path="/dashboard" component={Dashboard} />
+            <PrivateRoute
+              exact
+              path="/teacher-profile"
+              component={TeacherProfile}
+            />
           </Switch>
         </div>
       </Provider>

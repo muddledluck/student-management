@@ -23,7 +23,7 @@ class TeacherRegister extends Component {
   componentDidMount() {
     // If logged in and teacher try to go to register page, should redirect them to dahsboard
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
+      this.props.history.push("/teacher-profile");
     }
   }
 

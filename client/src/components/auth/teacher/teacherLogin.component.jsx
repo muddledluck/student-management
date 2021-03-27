@@ -19,13 +19,13 @@ class TeacherLogin extends Component {
   componentDidMount() {
     // If logged in and teacher try to go to login page, should redirect them to dahsboard
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
+      this.props.history.push("/teacher-profile");
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.auth.isAuthenticated) {
-      this.props.history.push("/dashboard"); //push user to dashboard when login is completed
+      this.props.history.push("/teacher-profile"); //push user to dashboard when login is completed
     }
 
     if (nextProps.errors) {

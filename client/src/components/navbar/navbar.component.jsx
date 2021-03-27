@@ -33,11 +33,6 @@ class Navbar extends Component {
                     <div className="col s6">
                       <Link
                         to="/teacher-register"
-                        style={{
-                          minWidth: "200px",
-                          borderRadius: "3px",
-                          letterSpacing: "1.5px",
-                        }}
                         className="btn btn-small waves-effect waves-light hoverable blue accent-3"
                       >
                         Register as Teacher
@@ -58,15 +53,38 @@ class Navbar extends Component {
                     </div>
                   </>
                 ) : (
-                  <button
-                    style={{
-                      marginLeft: "25vh",
-                    }}
-                    onClick={this.onLogoutClick}
-                    className="btn btn-small waves-effect waves-light hoverable blue accent-3"
-                  >
-                    Logout
-                  </button>
+                  <>
+                    <div
+                      className="col s6"
+                      style={{ display: "flex", justifyContent: "flex-end" }}
+                    >
+                      <Link to="/teacher-profile">
+                        <button
+                          style={{
+                            width: "140px",
+                            borderRadius: "3px",
+                            letterSpacing: "1.5px",
+                          }}
+                          className="btn btn-small waves-effect waves-light hoverable blue accent-3"
+                        >
+                          Dashboard
+                        </button>
+                      </Link>
+                    </div>
+                    <div className="col s6">
+                      <button
+                        onClick={this.onLogoutClick}
+                        style={{
+                          width: "140px",
+                          borderRadius: "3px",
+                          letterSpacing: "1.5px",
+                        }}
+                        className="btn btn-small waves-effect waves-light hoverable white black-text"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
