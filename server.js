@@ -16,6 +16,7 @@ app.use(
   })
 );
 app.use(bodyParser.json());
+app.use("/uploads", express.static("uploads"));
 
 //DB Config
 const db = keys.mongoURI;

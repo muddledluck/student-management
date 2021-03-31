@@ -52,7 +52,6 @@ class RegisterStudent extends Component {
                   type="text"
                   onChange={(e) => {
                     this.onChange(e);
-                    this.updatePassword();
                   }}
                 />
                 <label htmlFor="fname">First Name</label>
@@ -63,7 +62,6 @@ class RegisterStudent extends Component {
                   type="text"
                   onChange={(e) => {
                     this.onChange(e);
-                    this.updatePassword();
                   }}
                 />
                 <label htmlFor="lname">Last Name</label>
@@ -74,7 +72,6 @@ class RegisterStudent extends Component {
                   type="email"
                   onChange={(e) => {
                     this.onChange(e);
-                    this.updatePassword();
                   }}
                 />
                 <label htmlFor="email">email</label>
@@ -86,7 +83,6 @@ class RegisterStudent extends Component {
                   className="datepicker"
                   onChange={(e) => {
                     this.onChange(e);
-                    this.updatePassword();
                   }}
                 />
                 <label htmlFor="dob">Date of Birth</label>

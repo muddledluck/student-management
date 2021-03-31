@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import ProfileImg from "../../assets/img/profile_img.png";
+
 import ProfileImage from "../../components/profile_image/profile_image.component";
 import RegisterStudent from "../../components/teacher/register-student.component";
 
@@ -14,7 +14,7 @@ class TeacherProfile extends Component {
           className="col s2  light-blue darken-2"
           style={{ height: "100%", width: "15%" }}
         >
-          <ProfileImage profileImg={ProfileImg} />
+          <ProfileImage profileImg={teacher.profileImage} />
           <div className="col s10">
             <div className="col s8">
               <span>Register student</span>

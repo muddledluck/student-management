@@ -32,6 +32,10 @@ const TeacherSchema = new Schema({
     type: [Object],
     ref: "AssignmentByTeacher",
   },
+  profileImage: {
+    type: String,
+    default: ""
+  }
 });
 
 const TeacherModel = mongoose.model("teacher", TeacherSchema);

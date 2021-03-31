@@ -1,7 +1,9 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import multer from "multer";
 import { keys } from "../../config/keys.config.js";
+import fs from "fs";
 
 // Load input validation
 import validateTeacherRegisterInput from "../../validation/teacher/teacher_register.validation.js";
@@ -9,10 +11,70 @@ import validateLoginInput from "../../validation/login.validation.js";
 import validateGetTeacherDetailInput from "../../validation/teacher/teacher_detail.validation.js";
 import validateTeacherPostAssignmentInput from "../../validation/teacher/teacher_post_assignment.validation.js";
 import validateTeacherDeleteAssignmentInput from "../../validation/teacher/teacher_delete_assignment.validation.js";
+import validateTeacherProfileImageUpload from "../../validation/teacher/teacher_profile_image_upload.validation.js";
 
 // Load Teacher model
 import TeacherModel from "../../models/teacher.model.js";
 import AssignmentByTeacherModel from "../../models/assignmentByTeacher.model.js";
+
+// Setting up Multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    if (!fs.existsSync("uploads/teacher/")) {
+      fs.mkdirSync(`uploads/teacher`);
+    }
+    if (!fs.existsSync(`uploads/teacher/${req.body.LoggedUser.trim()}`)) {
+      fs.mkdirSync(`uploads/teacher/${req.body.LoggedUser.trim()}`);
+    }
+    if (
+      !fs.existsSync(
+        `uploads/teacher/${req.body.LoggedUser.trim()}/profile-image`
+      )
+    ) {
+      fs.mkdirSync(
+        `uploads/teacher/${req.body.LoggedUser.trim()}/profile-image`
+      );
+    } else {
+      fs.readdir(
+        `uploads/teacher/${req.body.LoggedUser.trim()}/profile-image`,
+        function (err, items) {
+          items.forEach((file) => {
+            fs.unlink(
+              `uploads/teacher/${req.body.LoggedUser.trim()}/profile-image/` +
+                file,
+              (err) => {
+                if (err) throw err;
+              }
+            );
+          });
+        }
+      );
+    }
+    cb(null, `uploads/teacher/${req.body.LoggedUser}/profile-image/`);
+  },
+  filename: function (req, file, cb) {
+    cb(null, new Date().toISOString() + "." + file.originalname.split(".")[1]);
+  },
+});
+
+// Filter upload images
+const imageFilter = (req, file, cb) => {
+  // reject a file
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/jpg") {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+// Multer initilazition
+const uploadProfileImage = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 2, // 2MB
+  },
+  fileFilter: imageFilter,
+});
 
 const TeacherRouter = express.Router();
 
@@ -140,7 +202,7 @@ TeacherRouter.post("/teacher-detail", (req, res) => {
 
 // @route POST api/teacher/post-assignment
 // @desc post assignment for student
-// @access Public
+// @access Teacher
 TeacherRouter.post("/post-assignment", (req, res) => {
   // Form Validation
   const { errors, isValid } = validateTeacherPostAssignmentInput(req.body);
@@ -171,7 +233,7 @@ TeacherRouter.post("/post-assignment", (req, res) => {
 
 // @route POST api/teacher/delete-assignment
 // @desc deletefor student
-// @access Public
+// @access Teacher
 TeacherRouter.post("/delete-assignment", (req, res) => {
   // Form Validation
   const { errors, isValid } = validateTeacherDeleteAssignmentInput(req.body);
@@ -197,5 +259,30 @@ TeacherRouter.post("/delete-assignment", (req, res) => {
       .catch((error) => res.json(error));
   }
 });
+
+// @route POST api/teacher/upload-image
+// @desc post profile image
+// @access Teacher
+TeacherRouter.post(
+  "/upload-image",
+  uploadProfileImage.single("profileImage"),
+  (req, res) => {
+    // Form Validation
+    const { errors, isValid } = validateTeacherProfileImageUpload(req.body);
+
+    // Check Validations
+    if (!isValid) {
+      return res.status(400).json(errors);
+    } else {
+      const LoggedUser = req.body.LoggedUser;
+      const profileImage = req.file.path;
+      TeacherModel.findByIdAndUpdate(LoggedUser, { profileImage: profileImage })
+        .then((teacher) => {
+          return res.status(200).json({ teacher: teacher });
+        })
+        .catch((err) => console.log(err));
+    }
+  }
+);
 
 export default TeacherRouter;

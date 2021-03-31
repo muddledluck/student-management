@@ -1,9 +1,14 @@
 import React from "react";
+import ProfileImg from "../../assets/img/profile_img.png";
 
 const ProfileImage = ({ profileImg }) => {
   return (
     <div className="col s10">
-      <img src={profileImg} alt="" className="circle responsive-img" />
+      <img
+        src={profileImg ? profileImg : ProfileImg}
+        alt=""
+        className="circle responsive-img"
+      />
     </div>
   );
 };
