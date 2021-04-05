@@ -16,65 +16,8 @@ import validateTeacherProfileImageUpload from "../../validation/teacher/teacher_
 // Load Teacher model
 import TeacherModel from "../../models/teacher.model.js";
 import AssignmentByTeacherModel from "../../models/assignmentByTeacher.model.js";
-
-// Setting up Multer
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    if (!fs.existsSync("uploads/teacher/")) {
-      fs.mkdirSync(`uploads/teacher`);
-    }
-    if (!fs.existsSync(`uploads/teacher/${req.body.LoggedUser.trim()}`)) {
-      fs.mkdirSync(`uploads/teacher/${req.body.LoggedUser.trim()}`);
-    }
-    if (
-      !fs.existsSync(
-        `uploads/teacher/${req.body.LoggedUser.trim()}/profile-image`
-      )
-    ) {
-      fs.mkdirSync(
-        `uploads/teacher/${req.body.LoggedUser.trim()}/profile-image`
-      );
-    } else {
-      fs.readdir(
-        `uploads/teacher/${req.body.LoggedUser.trim()}/profile-image`,
-        function (err, items) {
-          items.forEach((file) => {
-            fs.unlink(
-              `uploads/teacher/${req.body.LoggedUser.trim()}/profile-image/` +
-                file,
-              (err) => {
-                if (err) throw err;
-              }
-            );
-          });
-        }
-      );
-    }
-    cb(null, `uploads/teacher/${req.body.LoggedUser}/profile-image/`);
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString() + "." + file.originalname.split(".")[1]);
-  },
-});
-
-// Filter upload images
-const imageFilter = (req, file, cb) => {
-  // reject a file
-  if (file.mimetype === "image/jpeg" || file.mimetype === "image/jpg") {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-
-// Multer initilazition
-const uploadProfileImage = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1024 * 1024 * 2, // 2MB
-  },
-  fileFilter: imageFilter,
-});
+import { uploadProfileImage } from "../../multer/upload-profile-image/upload-profile-image.js";
+import { uploadAssignment } from "../../multer/upload-assignment/upload-assignment.js";
 
 const TeacherRouter = express.Router();
 
@@ -203,33 +146,37 @@ TeacherRouter.post("/teacher-detail", (req, res) => {
 // @route POST api/teacher/post-assignment
 // @desc post assignment for student
 // @access Teacher
-TeacherRouter.post("/post-assignment", (req, res) => {
-  // Form Validation
-  const { errors, isValid } = validateTeacherPostAssignmentInput(req.body);
+TeacherRouter.post(
+  "/post-assignment",
+  uploadAssignment.single("assignment"),
+  (req, res) => {
+    // Form Validation
+    const { errors, isValid } = validateTeacherPostAssignmentInput(req.body);
 
-  // Check Validation
-  if (!isValid) {
-    return res.status(400).json(errors);
-  } else {
-    const newAssignmentByTeacher = new AssignmentByTeacherModel({
-      title: req.body.title,
-      endDate: req.body.endDate,
-      questionPDF: req.body.questionPDF,
-      LoggedUser: req.body.LoggedUser,
-    });
-    newAssignmentByTeacher
-      .save()
-      .then((assignment) =>
-        TeacherModel.findOneAndUpdate(
-          { _id: req.body.LoggedUser },
-          { $push: { assignment: assignment } },
-          { new: true }
+    // Check Validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    } else {
+      const newAssignmentByTeacher = new AssignmentByTeacherModel({
+        title: req.body.title,
+        endDate: req.body.endDate,
+        questionPDF: req.file.path,
+        LoggedUser: req.body.LoggedUser,
+      });
+      newAssignmentByTeacher
+        .save()
+        .then((assignment) =>
+          TeacherModel.findOneAndUpdate(
+            { _id: req.body.LoggedUser },
+            { $push: { assignment: assignment } },
+            { new: true }
+          )
         )
-      )
-      .then((teacher) => res.status(200).json(teacher))
-      .catch((error) => res.json(error));
+        .then((teacher) => res.status(200).json(teacher))
+        .catch((error) => res.json(error));
+    }
   }
-});
+);
 
 // @route POST api/teacher/delete-assignment
 // @desc deletefor student

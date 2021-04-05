@@ -10,7 +10,7 @@ const validateTeacherPostAssignmentInput = (data) => {
   // Convert empty fields to an empty string so we can use validator functions
   data.title = !isEmpty(data.title) ? data.title : "";
   data.endDate = !isEmpty(data.endDate) ? data.endDate : "";
-  data.questionPDF = !isEmpty(data.questionPDF) ? data.questionPDF : "";
+  // data.questionPDF = !isEmpty(data.questionPDF) ? data.questionPDF : "";
   data.LoggedUser = !isEmpty(data.LoggedUser) ? data.LoggedUser : "";
 
   // title check
@@ -26,9 +26,9 @@ const validateTeacherPostAssignmentInput = (data) => {
   }
 
   // questionPDF check
-  if (Validator.isEmpty(data.questionPDF)) {
-    errors.questionPDF = "Question PDF is required";
-  }
+  // if (Validator.isEmpty(data.questionPDF)) {
+  //   errors.questionPDF = "Question PDF is required";
+  // }
 
   // LoggedUesr check
   if (Validator.isEmpty(data.LoggedUser)) {
