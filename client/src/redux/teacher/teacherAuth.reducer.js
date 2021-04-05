@@ -1,4 +1,8 @@
-import { SET_CURRENT_TEACHER, TEACHER_LOADING } from "./teacher.types";
+import {
+  SET_CURRENT_TEACHER,
+  TEACHER_LOADING,
+  CHANGE_PROFILE_IMAGE,
+} from "./teacher.types";
 import isEmpty from "is-empty";
 
 const initialState = {
@@ -20,6 +24,12 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
+      };
+    case CHANGE_PROFILE_IMAGE:
+      console.log("ACTIONReducer: ", action);
+      return {
+        ...state,
+        teacher: action.payload,
       };
     default:
       return state;

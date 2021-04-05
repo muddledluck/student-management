@@ -1,0 +1,33 @@
+.teacher-section-selected {
+  padding: 0 !important;
+  width: 100% !important;
+  background: white;
+  font-size: 200%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  cursor: pointer;
+}
+
+.teacher-section-unselected {
+  padding: 0 !important;
+  width: 100% !important;
+  font-size: 200%;
+  color: white;
+  display: flex;
+  justify-content: center;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  cursor: pointer;
+}
+
+/* If the screen size is 600px wide or less, set the font-size of <div> to 30px */
+@media screen and (max-width: 1000px) {
+  .teacher-section-selected {
+    font-size: 150%;
+  }
+  .teacher-section-unselected {
+    font-size: 150%;
+  }
+}

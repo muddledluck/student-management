@@ -272,15 +272,45 @@ TeacherRouter.post(
 
     // Check Validations
     if (!isValid) {
+      console.log("NOT VALID");
       return res.status(400).json(errors);
     } else {
-      const LoggedUser = req.body.LoggedUser;
-      const profileImage = req.file.path;
-      TeacherModel.findByIdAndUpdate(LoggedUser, { profileImage: profileImage })
-        .then((teacher) => {
-          return res.status(200).json({ teacher: teacher });
-        })
-        .catch((err) => console.log(err));
+      try {
+        const LoggedUser = req.body.LoggedUser;
+        const profileImage = req.file.path;
+        TeacherModel.findOneAndUpdate(
+          { _id: LoggedUser },
+          { $set: { profileImage: profileImage } },
+          { new: true }
+        )
+          .then((teacher) => {
+            const payload = {
+              ...teacher._doc,
+            };
+            jwt.sign(
+              payload,
+              keys.secretOrKey,
+              {
+                expiresIn: 31556926, // 1 year in seconds
+              },
+              (err, token) => {
+                res.json({
+                  teacher: { ...payload },
+                  success: true,
+                  token: "Bearer " + token,
+                });
+              }
+            );
+          })
+          .catch((err) => {
+            return res.status(400).json({ error: err });
+          });
+      } catch (err) {
+        return res.status(400).json({
+          error:
+            "Something went wrong, file size must be less then or equal to 2 MB",
+        });
+      }
     }
   }
 );

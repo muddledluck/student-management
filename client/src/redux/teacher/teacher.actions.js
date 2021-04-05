@@ -6,11 +6,11 @@ import {
   GET_ERRORS,
   TEACHER_LOADING,
   SET_CURRENT_TEACHER,
+  CHANGE_PROFILE_IMAGE,
 } from "./teacher.types";
 
 // Register User
 export const registerTeacher = (teacherData, history) => (dispatch) => {
-  console.log("teacherData: ", teacherData);
   axios
     .post("api/teacher/teacher-register", teacherData)
     .then((res) => {
@@ -26,7 +26,8 @@ export const registerTeacher = (teacherData, history) => (dispatch) => {
 };
 
 // Set Logged in teacher
-export const setCurrentTeacher = (decoded) => {
+export const setCurrentTeacher = (decoded, callingFrom) => {
+  console.log("CALLING AGAIN", callingFrom);
   return {
     type: SET_CURRENT_TEACHER,
     payload: decoded,
@@ -39,7 +40,6 @@ export const loginTeacher = (teacherData) => (dispatch) => {
     .post("/api/teacher/teacher-login", teacherData)
     .then((res) => {
       // Save to localStorage
-
       // Set token to loacalStorage
       const { token } = res.data;
       localStorage.setItem("jwtToken", token);
@@ -49,7 +49,7 @@ export const loginTeacher = (teacherData) => (dispatch) => {
       const decoded = jwt_decode(token);
       console.log("decode: ", decoded, "res: ", res);
       // Set current teacher
-      dispatch(setCurrentTeacher(decoded));
+      dispatch(setCurrentTeacher(decoded, "LoginTeacher"));
     })
     .catch((error) => {
       console.log(error);
@@ -62,13 +62,12 @@ export const loginTeacher = (teacherData) => (dispatch) => {
 
 // Logout Teacher
 export const logoutTeacher = () => (dispatch) => {
-  console.log("CALLING LOGUTUO");
   // Remove token from local storage
   localStorage.removeItem("jwtToken");
   // Remove auth header for future requests
   setAuthToken(false);
   // Set current user to empty object {} which will set isAuthenticated to false
-  dispatch(setCurrentTeacher({}));
+  dispatch(setCurrentTeacher({}, "logoutTeacher"));
 };
 
 // User loading
@@ -76,4 +75,23 @@ export const setTeacherLoading = () => {
   return {
     type: TEACHER_LOADING,
   };
+};
+
+// Change Profile Image
+export const changeProfileImage = (file) => (dispatch) => {
+  console.log("Action: ", file);
+  //LoggedUser
+  axios
+    .post("api/teacher/upload-image", file)
+    .then((res) => {
+      console.log("changeProfileImage: ", res);
+      if (res.status === 200) {
+        localStorage.setItem("jwtToken", res.data.token);
+        return dispatch({
+          type: CHANGE_PROFILE_IMAGE,
+          payload: res.data,
+        });
+      }
+    })
+    .catch((err) => console.log("actionERR: ", err));
 };

@@ -4,29 +4,109 @@ import { connect } from "react-redux";
 
 import ProfileImage from "../../components/profile_image/profile_image.component";
 import RegisterStudent from "../../components/teacher/register-student.component";
+import { changeProfileImage } from "../../redux/teacher/teacher.actions";
+
+import "./teacher-profile.style.css";
 
 class TeacherProfile extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selected: "register_student",
+      newImage: "",
+    };
+  }
+
+  onClickOptions = (e) => {
+    this.setState({ selected: e.target.id });
+  };
+
+  renderSection = () => {
+    switch (this.state.selected) {
+      case "register_student":
+        return <RegisterStudent />;
+      case "post_assignment":
+        return "post_assignment";
+      case "all_assignment":
+        return "all_assignment";
+      case "all_student":
+        return "all_student";
+      default:
+        return "";
+    }
+  };
+
+  changeProfileImage = (e) => {
+    const LoggedUser = this.props.auth.teacher._id;
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("LoggedUser", LoggedUser);
+    formData.append("profileImage", e.target.files[0]);
+    this.props.changeProfileImage(formData);
+  };
+
   render() {
     const { teacher } = this.props.auth;
     return (
       <div className="row" style={{ height: "93.2vh" }}>
         <div
           className="col s2  light-blue darken-2"
-          style={{ height: "100%", width: "15%" }}
+          style={{
+            height: "100%",
+            width: "15%",
+            padding: "0",
+            overflow: "hidden",
+          }}
         >
-          <ProfileImage profileImg={teacher.profileImage} />
-          <div className="col s10">
-            <div className="col s8">
-              <span>Register student</span>
+          <ProfileImage
+            profileImg={teacher.profileImage}
+            changeProfileImage={this.changeProfileImage}
+          />
+          <div
+            className="col s10"
+            style={{ padding: "0", margin: "0", width: "100%" }}
+          >
+            <div
+              className={`${
+                this.state.selected === "register_student"
+                  ? "teacher-section-selected"
+                  : "teacher-section-unselected"
+              } col s8`}
+              onClick={this.onClickOptions}
+            >
+              <span id="register_student">Register student</span>
             </div>
-            <div className="col s8">
-              <span>Post Assignment</span>
+            <div
+              className={`${
+                this.state.selected === "post_assignment"
+                  ? "teacher-section-selected"
+                  : "teacher-section-unselected"
+              } col s8`}
+              onClick={this.onClickOptions}
+            >
+              <span id="post_assignment">Post Assignment</span>
             </div>
-            <div className="col s8">
-              <span>All Assignment</span>
+            <div
+              className={`${
+                this.state.selected === "all_assignment"
+                  ? "teacher-section-selected"
+                  : "teacher-section-unselected"
+              } col s8`}
+              onClick={this.onClickOptions}
+            >
+              <span id="all_assignment">All Assignment</span>
             </div>
-            <div className="col s8">
-              <span>All Student</span>
+            <div
+              className={`${
+                this.state.selected === "all_student"
+                  ? "teacher-section-selected"
+                  : "teacher-section-unselected"
+              } col s8`}
+              id="post_assignment"
+              onClick={this.onClickOptions}
+            >
+              <span id="all_student">All Student</span>
             </div>
           </div>
         </div>
@@ -37,7 +117,7 @@ class TeacherProfile extends Component {
             <h4>{teacher.department}</h4>
           </div>
           <hr />
-          <RegisterStudent />
+          {this.renderSection()}
         </div>
       </div>
     );
@@ -46,10 +126,12 @@ class TeacherProfile extends Component {
 
 TeacherProfile.propTypes = {
   auth: PropTypes.object.isRequired,
+  changeProfileImage: PropTypes.func.isRequired,
 };
+
 const mapStateToProps = (state) => {
   return {
     auth: state.teacherAuth,
   };
 };
-export default connect(mapStateToProps)(TeacherProfile);
+export default connect(mapStateToProps, { changeProfileImage })(TeacherProfile);
