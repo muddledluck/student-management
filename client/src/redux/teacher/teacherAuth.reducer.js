@@ -2,6 +2,7 @@ import {
   SET_CURRENT_TEACHER,
   TEACHER_LOADING,
   CHANGE_PROFILE_IMAGE,
+  POST_ASSIGNMENT,
 } from "./teacher.types";
 import isEmpty from "is-empty";
 
@@ -14,10 +15,10 @@ const initialState = {
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_CURRENT_TEACHER:
-      console.log("action: ", action);
       return {
         ...state,
         isAuthenticated: !isEmpty(action.payload),
+        LoggedUser: action.payload._id,
         teacher: action.payload,
       };
     case TEACHER_LOADING:
@@ -26,7 +27,11 @@ const authReducer = (state = initialState, action) => {
         loading: true,
       };
     case CHANGE_PROFILE_IMAGE:
-      console.log("ACTIONReducer: ", action);
+      return {
+        ...state,
+        teacher: action.payload,
+      };
+    case POST_ASSIGNMENT:
       return {
         ...state,
         teacher: action.payload,

@@ -151,10 +151,13 @@ TeacherRouter.post(
   uploadAssignment.single("assignment"),
   (req, res) => {
     // Form Validation
-    const { errors, isValid } = validateTeacherPostAssignmentInput(req.body);
-
+    const { errors, isValid } = validateTeacherPostAssignmentInput(
+      req.body,
+      req.file
+    );
     // Check Validation
     if (!isValid) {
+      console.log("isValid", errors);
       return res.status(400).json(errors);
     } else {
       const newAssignmentByTeacher = new AssignmentByTeacherModel({
@@ -172,8 +175,26 @@ TeacherRouter.post(
             { new: true }
           )
         )
-        .then((teacher) => res.status(200).json(teacher))
-        .catch((error) => res.json(error));
+        .then((teacher) => {
+          const payload = {
+            ...teacher._doc,
+          };
+          jwt.sign(
+            payload,
+            keys.secretOrKey,
+            {
+              expiresIn: 31556926, // 1 year in seconds
+            },
+            (err, token) => {
+              res.json({
+                teacher: { ...payload },
+                success: true,
+                token: "Bearer " + token,
+              });
+            }
+          );
+        })
+        .catch((err) => res.status(400).json({ error: err }));
     }
   }
 );

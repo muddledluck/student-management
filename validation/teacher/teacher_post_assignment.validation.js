@@ -4,13 +4,13 @@ import mongodb from "mongodb";
 
 const ObjectId = mongodb.ObjectID;
 
-const validateTeacherPostAssignmentInput = (data) => {
+const validateTeacherPostAssignmentInput = (data, file) => {
   let errors = {};
 
   // Convert empty fields to an empty string so we can use validator functions
   data.title = !isEmpty(data.title) ? data.title : "";
   data.endDate = !isEmpty(data.endDate) ? data.endDate : "";
-  // data.questionPDF = !isEmpty(data.questionPDF) ? data.questionPDF : "";
+  const path = file ? file.path : "";
   data.LoggedUser = !isEmpty(data.LoggedUser) ? data.LoggedUser : "";
 
   // title check
@@ -21,14 +21,12 @@ const validateTeacherPostAssignmentInput = (data) => {
   // endDate check
   if (Validator.isEmpty(data.endDate)) {
     errors.endDate = "End Date is Required";
-  } else if (Validator.isDate(data.endDate)) {
-    errors.endDate = "Invalid endDate";
   }
 
   // questionPDF check
-  // if (Validator.isEmpty(data.questionPDF)) {
-  //   errors.questionPDF = "Question PDF is required";
-  // }
+  if (Validator.isEmpty(path)) {
+    errors.assignment = "Assignment is required";
+  }
 
   // LoggedUesr check
   if (Validator.isEmpty(data.LoggedUser)) {
@@ -36,7 +34,6 @@ const validateTeacherPostAssignmentInput = (data) => {
   } else if (!ObjectId.isValid(data.LoggedUser)) {
     errors.LoggedUser = "Invalid LoggedUser";
   }
-
   return {
     errors,
     isValid: isEmpty(errors),

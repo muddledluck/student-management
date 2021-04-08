@@ -4,9 +4,11 @@ import { connect } from "react-redux";
 
 import ProfileImage from "../../components/profile_image/profile_image.component";
 import RegisterStudent from "../../components/teacher/register-student.component";
+import PostAssignment from "../../components/teacher/post-assignment/post-assignment.component";
 import { changeProfileImage } from "../../redux/teacher/teacher.actions";
 
 import "./teacher-profile.style.css";
+// import AllAssignment from "../../components/teacher/all-assignment/all-assignment.component";
 
 class TeacherProfile extends Component {
   constructor(props) {
@@ -27,9 +29,9 @@ class TeacherProfile extends Component {
       case "register_student":
         return <RegisterStudent />;
       case "post_assignment":
-        return "post_assignment";
+        return <PostAssignment />;
       case "all_assignment":
-        return "all_assignment";
+        return "<AllAssignment />";
       case "all_student":
         return "all_student";
       default:

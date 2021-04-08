@@ -7,12 +7,13 @@ import {
   TEACHER_LOADING,
   SET_CURRENT_TEACHER,
   CHANGE_PROFILE_IMAGE,
+  POST_ASSIGNMENT,
 } from "./teacher.types";
 
 // Register User
 export const registerTeacher = (teacherData, history) => (dispatch) => {
   axios
-    .post("api/teacher/teacher-register", teacherData)
+    .post("/api/teacher/teacher-register", teacherData)
     .then((res) => {
       history.push("/teacher-login"); // redirect to login page
     })
@@ -52,7 +53,6 @@ export const loginTeacher = (teacherData) => (dispatch) => {
       dispatch(setCurrentTeacher(decoded, "LoginTeacher"));
     })
     .catch((error) => {
-      console.log(error);
       return dispatch({
         type: GET_ERRORS,
         payload: error,
@@ -79,12 +79,11 @@ export const setTeacherLoading = () => {
 
 // Change Profile Image
 export const changeProfileImage = (file) => (dispatch) => {
-  console.log("Action: ", file);
   //LoggedUser
   axios
     .post("api/teacher/upload-image", file)
     .then((res) => {
-      console.log("changeProfileImage: ", res);
+      console.log("res: ", res);
       if (res.status === 200) {
         localStorage.setItem("jwtToken", res.data.token);
         return dispatch({
@@ -94,4 +93,23 @@ export const changeProfileImage = (file) => (dispatch) => {
       }
     })
     .catch((err) => console.log("actionERR: ", err));
+};
+
+// Post Assignment
+export const postAssignment = (details) => (dispatch) => {
+  axios
+    .post("/api/teacher/post-assignment", details)
+    .then((res) => {
+      localStorage.setItem("jwtToken", res.data.token);
+      return dispatch({
+        type: POST_ASSIGNMENT,
+        payload: res.data,
+      });
+    })
+    .catch((error) =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: error.response.data,
+      })
+    );
 };
