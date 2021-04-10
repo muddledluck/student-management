@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 // Create Schema
-const TeacherSchema = new Schema({
+
+const StudentSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -16,9 +17,13 @@ const TeacherSchema = new Schema({
     type: String,
     required: true,
   },
-  adminApproved: {
-    type: Boolean,
-    default: false,
+  dateOfBirth: {
+    type: Date,
+    required: true,
+  },
+  teacherId: {
+    type: String,
+    required: true,
   },
   creationDate: {
     type: Date,
@@ -28,19 +33,11 @@ const TeacherSchema = new Schema({
     type: String,
     required: true,
   },
-  assignment: {
-    type: [Object],
-    ref: "AssignmentByTeacher",
-  },
   profileImage: {
     type: String,
     default: "",
   },
-  student: {
-    type: [String],
-    ref: "StudentRegisted",
-  },
 });
 
-const TeacherModel = mongoose.model("teacher", TeacherSchema);
-export default TeacherModel;
+const StudentModel = mongoose.model("student", StudentSchema);
+export default StudentModel;

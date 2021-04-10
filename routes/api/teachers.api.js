@@ -12,6 +12,7 @@ import validateGetTeacherDetailInput from "../../validation/teacher/teacher_deta
 import validateTeacherPostAssignmentInput from "../../validation/teacher/teacher_post_assignment.validation.js";
 import validateTeacherDeleteAssignmentInput from "../../validation/teacher/teacher_delete_assignment.validation.js";
 import validateTeacherProfileImageUpload from "../../validation/teacher/teacher_profile_image_upload.validation.js";
+import validateStudentRegisterInput from "../../validation/teacher/student_register.validation.js";
 
 // Load Teacher model
 import TeacherModel from "../../models/teacher.model.js";
@@ -19,6 +20,8 @@ import AssignmentByTeacherModel from "../../models/assignmentByTeacher.model.js"
 import { uploadProfileImage } from "../../multer/upload-profile-image/upload-profile-image.js";
 import { uploadAssignment } from "../../multer/upload-assignment/upload-assignment.js";
 
+// Load Student Model
+import StudentModel from "../../models/student.model.js";
 const TeacherRouter = express.Router();
 
 // @route POST api/teacher/teacher-register
@@ -240,7 +243,6 @@ TeacherRouter.post(
 
     // Check Validations
     if (!isValid) {
-      console.log("NOT VALID");
       return res.status(400).json(errors);
     } else {
       try {
@@ -282,5 +284,73 @@ TeacherRouter.post(
     }
   }
 );
+
+// @route POST api/teacher/student-register
+// @desc Register student
+// @access Teacher
+TeacherRouter.post("/student-register", (req, res) => {
+  // Form Validation
+  const { errors, isValid } = validateStudentRegisterInput(req.body);
+  if (!isValid) {
+    return res.status(400).json(errors);
+  } else {
+    StudentModel.findOne({ email: req.body.email }).then((student) => {
+      if (student) {
+        return res.status(400).json({ email: "Email already exists" });
+      } else {
+        const newStudent = new StudentModel({
+          name: req.body.name,
+          email: req.body.email,
+          password: req.body.password,
+          dateOfBirth: req.body.dateOfBirth,
+          teacherId: req.body.teacherId,
+          department: req.body.department,
+        });
+
+        // Hash Passowrd before store
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(newStudent.password, salt, (err, hash) => {
+            if (err) {
+              throw err;
+            }
+            newStudent.password = hash;
+            newStudent
+              .save()
+              .then((student) => {
+                TeacherModel.findOneAndUpdate(
+                  { _id: req.body.teacherId },
+                  { $push: { student: student._id } },
+                  { new: true }
+                )
+                  .then((teacher) => {
+                    const payload = {
+                      ...teacher._doc,
+                    };
+                    jwt.sign(
+                      payload,
+                      keys.secretOrKey,
+                      {
+                        expiresIn: 31556926, // 1 year in seconds
+                      },
+                      (err, token) => {
+                        res.json({
+                          teacher: { ...payload },
+                          successRegistration: true,
+                          token: "Bearer " + token,
+                        });
+                      }
+                    );
+                  })
+                  .catch((err) => {
+                    throw err;
+                  });
+              })
+              .catch((err) => console.log(err));
+          });
+        });
+      }
+    });
+  }
+});
 
 export default TeacherRouter;
