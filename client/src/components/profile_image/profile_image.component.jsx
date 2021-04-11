@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import "./profile_image.styles.css";
 
 const ProfileImage = ({ profileImg, changeProfileImage }) => {
-  console.log("profileImg: ", profileImg);
   return (
     <>
       <div className="avatar-upload">
