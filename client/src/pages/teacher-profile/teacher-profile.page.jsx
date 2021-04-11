@@ -8,6 +8,7 @@ import PostAssignment from "../../components/teacher/post-assignment/post-assign
 import { changeProfileImage } from "../../redux/teacher/teacher.actions";
 
 import "./teacher-profile.style.css";
+import AllAssignment from "../../components/teacher/all-assignment/all-assignment.component";
 // import AllAssignment from "../../components/teacher/all-assignment/all-assignment.component";
 
 class TeacherProfile extends Component {
@@ -31,7 +32,7 @@ class TeacherProfile extends Component {
       case "post_assignment":
         return <PostAssignment />;
       case "all_assignment":
-        return "<AllAssignment />";
+        return <AllAssignment />;
       case "all_student":
         return "all_student";
       default:

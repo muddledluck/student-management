@@ -3,6 +3,7 @@ import {
   TEACHER_LOADING,
   CHANGE_PROFILE_IMAGE,
   POST_ASSIGNMENT,
+  STUDENT_REGISTRATION,
 } from "./teacher.types";
 import isEmpty from "is-empty";
 
@@ -32,6 +33,12 @@ const authReducer = (state = initialState, action) => {
         teacher: action.payload,
       };
     case POST_ASSIGNMENT:
+      return {
+        ...state,
+        teacher: action.payload.teacher,
+        successAssigment: action.payload.success,
+      };
+    case STUDENT_REGISTRATION:
       return {
         ...state,
         teacher: action.payload,

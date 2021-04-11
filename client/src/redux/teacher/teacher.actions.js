@@ -27,8 +27,7 @@ export const registerTeacher = (teacherData, history) => (dispatch) => {
 };
 
 // Set Logged in teacher
-export const setCurrentTeacher = (decoded, callingFrom) => {
-  console.log("CALLING AGAIN", callingFrom);
+export const setCurrentTeacher = (decoded) => {
   return {
     type: SET_CURRENT_TEACHER,
     payload: decoded,
@@ -50,7 +49,7 @@ export const loginTeacher = (teacherData) => (dispatch) => {
       const decoded = jwt_decode(token);
       console.log("decode: ", decoded, "res: ", res);
       // Set current teacher
-      dispatch(setCurrentTeacher(decoded, "LoginTeacher"));
+      dispatch(setCurrentTeacher(decoded));
     })
     .catch((error) => {
       return dispatch({
@@ -67,7 +66,7 @@ export const logoutTeacher = () => (dispatch) => {
   // Remove auth header for future requests
   setAuthToken(false);
   // Set current user to empty object {} which will set isAuthenticated to false
-  dispatch(setCurrentTeacher({}, "logoutTeacher"));
+  dispatch(setCurrentTeacher({}));
 };
 
 // User loading
@@ -83,12 +82,11 @@ export const changeProfileImage = (file) => (dispatch) => {
   axios
     .post("api/teacher/upload-image", file)
     .then((res) => {
-      console.log("res: ", res);
       if (res.status === 200) {
         localStorage.setItem("jwtToken", res.data.token);
         return dispatch({
           type: CHANGE_PROFILE_IMAGE,
-          payload: res.data,
+          payload: res.data.teacher,
         });
       }
     })
@@ -101,9 +99,13 @@ export const postAssignment = (details) => (dispatch) => {
     .post("/api/teacher/post-assignment", details)
     .then((res) => {
       localStorage.setItem("jwtToken", res.data.token);
+      const payload = {
+        teacher: res.data.teacher,
+        success: res.data.success,
+      };
       return dispatch({
         type: POST_ASSIGNMENT,
-        payload: res.data,
+        payload: payload,
       });
     })
     .catch((error) =>
